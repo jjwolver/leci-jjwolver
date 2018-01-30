@@ -1,4 +1,4 @@
-#datamuse-caching
+#simple-datamuse
 import requests
 import json
 

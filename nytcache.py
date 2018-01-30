@@ -1,3 +1,8 @@
+#ny-simple.py
+from secrets import *
+import requests
+
+
 #datamuse-caching
 import requests
 import json
@@ -49,28 +54,22 @@ def make_request_using_cache(baseurl, params):
         fw.close() # Close the open file
         return CACHE_DICTION[unique_ident]
 
-# Gets data from the datamuse API, using the cache
-def get_rhymes_from_datamuse_caching(rhymes_with):
-    baseurl = "https://api.datamuse.com/words"
-    params_diction = {}
-    params_diction["rel_rhy"] = rhymes_with
-    return make_request_using_cache(baseurl, params_diction)
 
-# extract just the words from the data structures returned by datamuse
-def get_word_list(data_muse_word_list):
-    words = []
-    for word_dict in data_muse_word_list:
-        words.append(word_dict['word'])
-    return words
+# gets stories from a particular section of NY times
+def get_stories(section):
+    baseurl = 'https://api.nytimes.com/svc/topstories/v2/'
+    extendedurl = baseurl + section + '.json'
+    params={'api-key': nyt_key}
+    return make_request_using_cache(extendedurl, params)
 
-# print up to 'max_rhymes' words that rhyme with 'word'
-def print_rhymes(word, max_rhymes=10):
-    rhymes = get_word_list(get_rhymes_from_datamuse_caching(word))
-    print('Words that rhyme with', word)
-    max2print = min(max_rhymes, len(rhymes))
-    for i in range(max2print):
-        print('\t', rhymes[i])
+def get_headlines(nyt_results_dict):
+    results = nyt_results_dict['results']
+    headlines = []
+    for r in results:
+        headlines.append(r['title'])
+    return headlines
 
-print_rhymes('blue')
-print_rhymes('green')
-print_rhymes('purple')
+story_list_json = get_stories('science')
+headlines = get_headlines(story_list_json)
+for h in headlines:
+    print(h)
